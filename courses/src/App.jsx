@@ -1,3 +1,5 @@
+import Course from './components/Course'
+
 const App = () => {
   const course = {
     id: 1,
@@ -21,7 +23,8 @@ const App = () => {
     ]
   }
 
-  return <Course course={course} />
+  return <Course name={course.name} parts={course.parts}/>
 }
+
 
 export default App
