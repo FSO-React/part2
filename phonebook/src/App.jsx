@@ -8,9 +8,24 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
 
+  const verifyNewName = () => {
+    console.log(persons)
+    if (persons.some(person => person.name === newName)) {
+      console.log('nombre repetido>', newName)
+      alert(`'${newName}' is already added to phonebook`)
+      return false
+    }
+    if (!newName || newName.length === 0) {
+      console.log('nombre nulo')
+      alert(`enter a valid name to add`)
+      return false
+    }
+    return true
+  }
+
   const addName = (event) => {
     event.preventDefault()
-    if (!newName || newName === 0) return;
+    if (!verifyNewName()) return;
     const nameObject = {
       name: newName
     }
