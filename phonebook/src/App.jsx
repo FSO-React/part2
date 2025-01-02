@@ -17,12 +17,13 @@ const App = () => {
   const [filterName, setFilterName] = useState('')
 
   const fetchPersons = async () => {
-    try {
-      const { status, data } = await axios.get('http://localhost:3001/persons');
-      if (status === 200) setPersons(data);
-    } catch (error) {
-      console.error('Error fetching persons:', error);
-    }
+    await axios.get(`http://localhost:3001/persons`)
+      .then(({ data }) => {
+        setPersons(data);
+      })
+      .catch(error => {
+        console.error('Error fetching persons:', error);
+      });
   };
 
   const verifyNewName = () => {
@@ -53,16 +54,22 @@ const App = () => {
     return true
   }
 
-  const addContact = (event) => {
+  const addContact = async (event) => {
     event.preventDefault()
     if (!verifyNewName()) return;
     if (!verifyNewNumber()) return;
     const contactObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     }
-    setPersons(persons.concat(contactObject))
+
+    await axios.post(`http://localhost:3001/persons`, contactObject)
+      .then(({ data }) => {
+        setPersons(persons.concat(data))
+      })
+      .catch(error => {
+        console.error('Error adding person:', error);
+      });
     setNewName('')
     setNewNumber('')
   }
