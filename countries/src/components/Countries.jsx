@@ -1,17 +1,12 @@
-import { useState } from 'react'
 import Country from './Country'
 
-const Countries = ({ countries, filter }) => {
-    // seleccion
-    const [ selectedCountry, setSelectedCountry ] = useState(null)
-
+const Countries = ({ countries, filter, selectedCountry, setSelectedCountry }) => {
     // filtrado
     const countriesToShow = (filter.trim().length > 0) ? countries.filter(c => c.name.common.toLowerCase().includes(filter.toLowerCase())) : countries
     console.log('countries to show', countriesToShow)
 
     const handleShowCountry = (country) => {
       if (selectedCountry && selectedCountry.name.common === country.name.common) {
-        console.log('llega acaa')
         setSelectedCountry(null)
         return;
       }
@@ -25,6 +20,11 @@ const Countries = ({ countries, filter }) => {
     }
 
     if (countriesToShow.length > 1) {
+      if (selectedCountry) {
+        return (
+          <Country country={selectedCountry}></Country>
+        )
+      }
       return (
         <div>
           <ul>
@@ -35,7 +35,7 @@ const Countries = ({ countries, filter }) => {
               </li>
             ))}
           </ul>
-          {selectedCountry && <Country country={selectedCountry} />}
+          {/* {selectedCountry && <Country country={selectedCountry} />} */}
         </div>
       );
     }

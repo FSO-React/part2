@@ -7,6 +7,8 @@ import Countries from './components/Countries'
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filterName, setFilterName] = useState('')
+  const [ selectedCountry, setSelectedCountry ] = useState(null)
+
 
   const fetchCountries = async () => {
     await service.getAll()
@@ -20,6 +22,7 @@ const App = () => {
 
   const handleFilterChange = (event) => {
     setFilterName(event.target.value)
+    setSelectedCountry(null)
   }
 
   useEffect(() => {
@@ -29,7 +32,7 @@ const App = () => {
   return (
     <div>
       <Input text='find countries ' value={filterName} onChange={handleFilterChange}></Input>
-      <Countries countries={countries} filter={filterName}></Countries>
+      <Countries countries={countries} filter={filterName} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry}></Countries>
     </div>
   )
 }
