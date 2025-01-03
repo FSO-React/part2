@@ -57,7 +57,11 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
         .catch(error => {
-          console.error('Error deleting person:', error);
+          setErrorMessage(`The contact ${name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000);
+          setPersons(persons.filter(person => person.id !== id))
         });
     }
   }
@@ -71,8 +75,8 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
-      .catch(error => {
-        console.error('Error updating person:', error);
+      .catch(() => {
+        console.error('Error updating person:', error);        
       });
   }
 
@@ -129,6 +133,7 @@ const App = () => {
     <div>
       <Header text='Phonebook'></Header>
       <Notification status='success' message={successMessage}></Notification>
+      <Notification status='error' message={errorMessage}></Notification>
       <Input text='filter shown with' value={filterName} onChange={handleFilterChange}></Input>
       {/* input generalizado para filtro e inputs del form */}
       
