@@ -58,6 +58,16 @@ const App = () => {
     }
   }
 
+  const updatePerson = async (id, newContact) => {
+    await contactService.update(id, newContact)
+      .then(({ data }) => {
+        setPersons(persons.map(person => person.id !== id ? person : data))
+      })
+      .catch(error => {
+        console.error('Error updating person:', error);
+      });
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -73,7 +83,12 @@ const App = () => {
   const verifyNewName = () => {
     if (persons.some(person => person.name === newName)) {
       console.log('nombre repetido>', newName)
-      alert(`'${newName}' is already added to phonebook`)
+      if (window.confirm(`'${newName}' is already added to phonebook, replace the old number with a new one?`)) {
+        if (!verifyNewNumber()) return;
+        const person = persons.find(person => person.name === newName)
+        const updatedPerson = { ...person, number: newNumber }
+        updatePerson(person.id, updatedPerson)
+      }
       return false
     }
     if (!newName || newName.trim().length === 0) {
