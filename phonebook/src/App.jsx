@@ -46,6 +46,18 @@ const App = () => {
     setNewNumber('')
   }
 
+  const deletePerson = async ({ id, name }) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      await contactService.remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          console.error('Error deleting person:', error);
+        });
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -100,7 +112,7 @@ const App = () => {
       <PersonsForm newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} addContact={addContact}></PersonsForm>
 
       <Header text='Numbers'></Header>
-      <Persons persons={persons} filter={filterName}></Persons>
+      <Persons persons={persons} filter={filterName} deletePerson={deletePerson}></Persons>
     </div>
   )
 }
