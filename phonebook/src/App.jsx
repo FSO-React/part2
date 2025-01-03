@@ -1,5 +1,5 @@
+import contactService from './services/contacs'
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 
 import Header from './components/Header'
 import Input from './components/Input'
@@ -17,7 +17,7 @@ const App = () => {
   const [filterName, setFilterName] = useState('')
 
   const fetchPersons = async () => {
-    await axios.get(`http://localhost:3001/persons`)
+    await contactService.getAll()
       .then(({ data }) => {
         setPersons(data);
       })
@@ -25,6 +25,38 @@ const App = () => {
         console.error('Error fetching persons:', error);
       });
   };
+
+  const addContact = async (event) => {
+    event.preventDefault()
+    if (!verifyNewName()) return;
+    if (!verifyNewNumber()) return;
+    const contactObject = {
+      name: newName,
+      number: newNumber,
+    }
+
+    await contactService.create(contactObject)
+      .then(({ data }) => {
+        setPersons(persons.concat(data))
+      })
+      .catch(error => {
+        console.error('Error adding person:', error);
+      });
+    setNewName('')
+    setNewNumber('')
+  }
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const handleFilterChange = (event) => {
+    setFilterName(event.target.value)
+  }
 
   const verifyNewName = () => {
     if (persons.some(person => person.name === newName)) {
@@ -52,38 +84,6 @@ const App = () => {
       return false
     }
     return true
-  }
-
-  const addContact = async (event) => {
-    event.preventDefault()
-    if (!verifyNewName()) return;
-    if (!verifyNewNumber()) return;
-    const contactObject = {
-      name: newName,
-      number: newNumber,
-    }
-
-    await axios.post(`http://localhost:3001/persons`, contactObject)
-      .then(({ data }) => {
-        setPersons(persons.concat(data))
-      })
-      .catch(error => {
-        console.error('Error adding person:', error);
-      });
-    setNewName('')
-    setNewNumber('')
-  }
-
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleFilterChange = (event) => {
-    setFilterName(event.target.value)
   }
 
   useEffect(() => {
