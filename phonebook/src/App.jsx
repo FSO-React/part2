@@ -5,16 +5,16 @@ import Header from './components/Header'
 import Input from './components/Input'
 import Persons from './components/Persons'
 import PersonsForm from './components/PersonsForm'
+import Notification from './components/Notification'
 
 
 const App = () => {
-  // personas
   const [persons, setPersons] = useState([])
-  // datos para nuevo contacto
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  // filtro por nombre
   const [filterName, setFilterName] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const fetchPersons = async () => {
     await contactService.getAll()
@@ -38,6 +38,10 @@ const App = () => {
     await contactService.create(contactObject)
       .then(({ data }) => {
         setPersons(persons.concat(data))
+        setSuccessMessage(`The contact ${contactObject.name} has been added properly`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000);
       })
       .catch(error => {
         console.error('Error adding person:', error);
@@ -62,6 +66,10 @@ const App = () => {
     await contactService.update(id, newContact)
       .then(({ data }) => {
         setPersons(persons.map(person => person.id !== id ? person : data))
+        setSuccessMessage(`The contact ${data.name} changed properly to the phonenumber ${data.number}`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       })
       .catch(error => {
         console.error('Error updating person:', error);
@@ -120,6 +128,7 @@ const App = () => {
   return (
     <div>
       <Header text='Phonebook'></Header>
+      <Notification status='success' message={successMessage}></Notification>
       <Input text='filter shown with' value={filterName} onChange={handleFilterChange}></Input>
       {/* input generalizado para filtro e inputs del form */}
       
