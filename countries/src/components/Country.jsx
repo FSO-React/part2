@@ -6,20 +6,21 @@ const Country = ({ country }) => {
   const [ weather, setWeather ] = useState(null)
   
   const fetchWeather = async () => {
-      const body = {
-        lat: country.latlng[0],
-        lon: country.latlng[1],
-        capital: country.capital
-      }
-      await weatherService.getOne(body)
-        .then(({ data }) => {
-          console.log('weather', data)
-          setWeather(data);
-        })
-        .catch(error => {
-          console.error('Error fetching persons:', error);
-        });
-    };
+    const body = {
+      lat: country.latlng[0],
+      lon: country.latlng[1],
+      capital: country.capital,
+      apiKey: import.meta.env.VITE_OPEN_WEATHER_API 
+    }
+    await weatherService.getOne(body)
+      .then(({ data }) => {
+        console.log('weather', data)
+        setWeather(data);
+      })
+      .catch(error => {
+        console.error('Error fetching persons:', error);
+      });
+  };
 
   useEffect(() => {
     fetchWeather();
