@@ -55,6 +55,7 @@ const App = () => {
       await contactService.remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setSuccessMessage(`The contact ${name} has been removed from server`)
         })
         .catch(error => {
           setErrorMessage(`The contact ${name} has already been removed from server`)
@@ -78,6 +79,8 @@ const App = () => {
       .catch(() => {
         console.error('Error updating person:', error);        
       });
+    setNewName('')
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
