@@ -22,14 +22,13 @@ const App = () => {
         setPersons(data);
       })
       .catch(error => {
-        console.error('Error fetching persons:', error);
+        defineMessage({ message:error.response.data.error, isSuccess:false })
       });
   };
 
   const addContact = async (event) => {
     event.preventDefault()
     if (!verifyNewName()) return;
-    if (!verifyNewNumber()) return;
     const contactObject = {
       name: newName,
       number: newNumber,
@@ -38,13 +37,11 @@ const App = () => {
     await contactService.create(contactObject)
       .then(({ data }) => {
         setPersons(persons.concat(data))
-        setSuccessMessage(`The contact ${contactObject.name} has been added properly`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000);
+        defineMessage({ message:`The contact ${contactObject.name} has been added properly`, isSuccess:true })
       })
-      .catch(error => {
-        console.error('Error adding person:', error);
+      .catch((error) => {
+        console.log(error.response.data.error);
+        defineMessage({ message: error.response.data.error, isSuccess:false })
       });
     setNewName('')
     setNewNumber('')
@@ -55,14 +52,11 @@ const App = () => {
       await contactService.remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
-          setSuccessMessage(`The contact ${name} has been removed from server`)
+          defineMessage({ message: `The contact ${name} has been removed from server`, isSuccess:true })
         })
         .catch(error => {
-          setErrorMessage(`The contact ${name} has already been removed from server`)
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000);
           setPersons(persons.filter(person => person.id !== id))
+          defineMessage({ message: `The contact ${name} has already been removed from server`, isSuccess:false })
         });
     }
   }
@@ -76,8 +70,8 @@ const App = () => {
           setSuccessMessage(null)
         }, 5000)
       })
-      .catch(() => {
-        console.error('Error updating person:', error);        
+      .catch((error) => {
+        defineMessage({ message: error.response.data.error, isSuccess:false })
       });
     setNewName('')
     setNewNumber('')
@@ -97,35 +91,32 @@ const App = () => {
 
   const verifyNewName = () => {
     if (persons.some(person => person.name === newName)) {
-      console.log('nombre repetido>', newName)
+      console.log('!!! repeated name', newName)
       if (window.confirm(`'${newName}' is already added to phonebook, replace the old number with a new one?`)) {
-        if (!verifyNewNumber()) return;
         const person = persons.find(person => person.name === newName)
         const updatedPerson = { ...person, number: newNumber }
         updatePerson(person.id, updatedPerson)
       }
       return false
     }
-    if (!newName || newName.trim().length === 0) {
-      console.log('nombre nulo')
-      alert(`enter a valid name to add`)
-      return false
-    }
     return true
   }
 
-  const verifyNewNumber = () => {
-    if (persons.some(person => person.number === newNumber)) {
-      console.log('numero repetido>', newNumber )
-      alert(`'${newNumber}' is already added to phonebook`)
-      return false
+  const defineMessage = ({ message, isSuccess }) => {
+    //success
+    if (isSuccess) {
+      setSuccessMessage(message)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+      return
     }
-    if (!newNumber || newNumber.trim().length === 0) {
-      console.log('numero nulo')
-      alert(`enter a valid number to add`)
-      return false
-    }
-    return true
+    //error
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
+    return
   }
 
   useEffect(() => {
